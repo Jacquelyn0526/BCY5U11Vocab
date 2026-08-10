@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《诗情画意的世界》五年级华文词汇评估</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+            min-height: 100vh;
+        }
+        .font-fun {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .bounce-hover:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 text-slate-800">
+
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur rounded-3xl p-4 sm:p-6 mb-6 card-shadow border border-sky-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-sky-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-md">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-800">《诗情画意的世界》</h1>
+                <p class="text-xs sm:text-sm text-sky-600 font-medium">五年级华文单元十一 · 词汇互动评估与巩固</p>
+            </div>
+        </div>
+        <!-- Global Controls -->
+        <div class="flex items-center gap-2">
+            <button id="toggleMalayBtn" onclick="toggleMalayHelp()" class="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 border border-amber-300">
+                <i class="fa-solid fa-language"></i> <span id="malayBtnText">显示国文辅助 (BM)</span>
+            </button>
+            <div class="bg-sky-100 text-sky-800 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-sky-200">
+                <i class="fa-solid fa-star text-amber-500"></i> 得分: <span id="globalScore" class="text-lg text-sky-700">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-6">
+        <button onclick="switchTab('study')" id="tab-study" class="nav-tab py-3 px-2 rounded-2xl font-bold text-xs sm:text-sm transition flex flex-col items-center gap-1 bg-white text-slate-600 card-shadow border border-slate-100">
+            <i class="fa-solid fa-book-open text-sky-500 text-lg"></i>
+            <span>1. 词汇温习</span>
+        </button>
+        <button onclick="switchTab('pinyin')" id="tab-pinyin" class="nav-tab py-3 px-2 rounded-2xl font-bold text-xs sm:text-sm transition flex flex-col items-center gap-1 bg-white text-slate-600 card-shadow border border-slate-100">
+            <i class="fa-solid fa-spell-check text-emerald-500 text-lg"></i>
+            <span>2. 拼音选择</span>
+        </button>
+        <button onclick="switchTab('characters')" id="tab-characters" class="nav-tab py-3 px-2 rounded-2xl font-bold text-xs sm:text-sm transition flex flex-col items-center gap-1 bg-white text-slate-600 card-shadow border border-slate-100">
+            <i class="fa-solid fa-pen-nib text-indigo-500 text-lg"></i>
+            <span>3. 形近字辨析</span>
+        </button>
+        <button onclick="switchTab('matching')" id="tab-matching" class="nav-tab py-3 px-2 rounded-2xl font-bold text-xs sm:text-sm transition flex flex-col items-center gap-1 bg-white text-slate-600 card-shadow border border-slate-100">
+            <i class="fa-solid fa-puzzle-piece text-amber-500 text-lg"></i>
+            <span>4. 词义配对</span>
+        </button>
+        <button onclick="switchTab('fill')" id="tab-fill" class="nav-tab py-3 px-2 rounded-2xl font-bold text-xs sm:text-sm transition flex flex-col items-center gap-1 bg-white text-slate-600 card-shadow border border-slate-100 col-span-2 sm:col-span-1">
+            <i class="fa-solid fa-volume-high text-rose-500 text-lg"></i>
+            <span>5. 句子填空(语音)</span>
+        </button>
+    </nav>
+
+    <!-- SECTION 1: 词汇温习 Flashcards -->
+    <section id="sec-study" class="tab-content bg-white rounded-3xl p-6 card-shadow border border-slate-100">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-book-open text-sky-500 mr-2"></i>课文重点词汇卡（点发音图标可听读音）</h2>
+                <p class="text-xs text-slate-500">点击卡片右上角的发音按钮可聆听正确读音。</p>
+            </div>
+            <span class="text-xs font-semibold bg-sky-100 text-sky-700 px-3 py-1 rounded-full">共 15 个词汇</span>
+        </div>
+        <div id="flashcardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamically populated -->
+        </div>
+    </section>
+
+    <!-- SECTION 2: 拼音选择题 -->
+    <section id="sec-pinyin" class="tab-content hidden bg-white rounded-3xl p-6 card-shadow border border-slate-100">
+        <div class="mb-4 pb-3 border-b border-slate-100 flex justify-between items-center">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-spell-check text-emerald-500 mr-2"></i>第一关：选出正确的汉语拼音</h2>
+                <p class="text-xs text-slate-500">看汉字，选出读音最正确的拼音。答错将重试至完全掌握！</p>
+            </div>
+            <div class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                已掌握: <span id="pinyinProgress">0</span>/15
+            </div>
+        </div>
+        <div id="pinyinQuizArea" class="max-w-xl mx-auto">
+            <!-- Quiz Card -->
+        </div>
+    </section>
+
+    <!-- SECTION 3: 辨别形近字 -->
+    <section id="sec-characters" class="tab-content hidden bg-white rounded-3xl p-6 card-shadow border border-slate-100">
+        <div class="mb-4 pb-3 border-b border-slate-100 flex justify-between items-center">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-pen-nib text-indigo-500 mr-2"></i>第二关：形近字/同音字辨析</h2>
+                <p class="text-xs text-slate-500">从方框中选出正确的汉字配对成词。答错将重试至完全掌握！</p>
+            </div>
+            <div class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                已掌握: <span id="charProgress">0</span>/15
+            </div>
+        </div>
+        <div id="charQuizArea" class="max-w-xl mx-auto">
+            <!-- Quiz Card -->
+        </div>
+    </section>
+
+    <!-- SECTION 4: 词义配对 -->
+    <section id="sec-matching" class="tab-content hidden bg-white rounded-3xl p-6 card-shadow border border-slate-100">
+        <div class="mb-4 pb-3 border-b border-slate-100 flex justify-between items-center">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-puzzle-piece text-amber-500 mr-2"></i>第三关：词义连线配对</h2>
+                <p class="text-xs text-slate-500">先点击左边的【词语】，再点击右边对应的【浅白解释】。共3组完成全15词！</p>
+            </div>
+            <div class="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                已配对: <span id="matchProgress">0</span>/15
+            </div>
+        </div>
+        <div id="matchingContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="matchLeftCol" class="space-y-3"></div>
+            <div id="matchRightCol" class="space-y-3"></div>
+        </div>
+        <div class="mt-6 flex justify-between items-center">
+            <span id="matchBatchBadge" class="text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1.5 rounded-xl border border-amber-300">第 1 / 3 组</span>
+            <button onclick="resetMatching()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition">
+                <i class="fa-solid fa-rotate-right mr-1"></i> 重置本关
+            </button>
+        </div>
+    </section>
+
+    <!-- SECTION 5: 句子填空 (配有语音) -->
+    <section id="sec-fill" class="tab-content hidden bg-white rounded-3xl p-6 card-shadow border border-slate-100">
+        <div class="mb-4 pb-3 border-b border-slate-100 flex justify-between items-center">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-volume-high text-rose-500 mr-2"></i>第四关：看情境选词填空（配语音辅助）</h2>
+                <p class="text-xs text-slate-500">选择最恰当的词语填入句子中。答错将重试至完全掌握！</p>
+            </div>
+            <div class="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
+                已掌握: <span id="fillProgress">0</span>/15
+            </div>
+        </div>
+        <div id="fillQuizArea" class="max-w-xl mx-auto">
+            <!-- Fill-in-the-blank Quiz -->
+        </div>
+    </section>
+</div>
+
+<!-- Completion Modal -->
+<div id="completeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center card-shadow border border-slate-100 animate-bounce-in">
+        <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-800 mb-1">太棒了！表现优异！</h3>
+        <p class="text-sm text-slate-500 mb-4">你完成了《诗情画意的世界》词汇评估！</p>
+        <div class="bg-sky-50 rounded-2xl p-4 mb-6 border border-sky-100">
+            <div class="text-xs text-sky-600 font-semibold mb-1">最终得分</div>
+            <div class="text-4xl font-extrabold text-sky-600" id="modalFinalScore">0</div>
+        </div>
+        <button onclick="closeModal()" class="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-lg transition">
+            继续练习 / 温习
+        </button>
+    </div>
+</div>
+
+<script>
+// --- DATA DEFINITIONS ---
+const vocabularyData = [
+    { word: "悬浮", pinyin: "xuán fú", malay: "Terapung", explanation: "飘浮在空中或水里，没有掉下来", distractPinyin: ["xuán hú", "xuán fó", "xúan fú"], similarChars: ["悬", "县"], distractorWord: "县浮", sentence: "美丽的气球静静地_____在半空中。", choices: ["悬浮", "攀附", "晃动"] },
+    { word: "攀附", pinyin: "pān fù", malay: "Memanjat / Berpaut", explanation: "抓住或抓紧别的东西不放", distractPinyin: ["pān hù", "bān fù", "pān fù"], similarChars: ["攀", "樊"], distractorWord: "樊附", sentence: "绿色的藤蔓顺着墙壁向上_____。", choices: ["攀附", "沉稳", "惊扰"] },
+    { word: "浪涛", pinyin: "làng tāo", malay: "Ombak besar", explanation: "大海里很大、很急的波浪", distractPinyin: ["làng shòu", "láng tāo", "làng tō"], similarChars: ["涛", "寿"], distractorWord: "浪寿", sentence: "大海里的_____拍打着岸边的石头，声音很大。", choices: ["浪涛", "绿荫", "宇宙"] },
+    { word: "幽幽", pinyin: "yōu yōu", malay: "Sunyi / Tenang", explanation: "静静的、声音很小或光线微微的样子", distractPinyin: ["yǒu yǒu", "yū yū", "yōu yóu"], similarChars: ["幽", "山"], distractorWord: "山山", sentence: "微风吹过，森林里飘来一缕_____的草香味。", choices: ["幽幽", "嘲笑", "围栏"] },
+    { word: "宇宙", pinyin: "yǔ zhòu", malay: "Alam semesta", explanation: "包括地球、太阳和所有星星的大天空世界", distractPinyin: ["yú zhòu", "yǔ zòu", "yǔ zhóu"], similarChars: ["宙", "由"], distractorWord: "宇由", sentence: "天空中无数的星星，构成了广阔无边际的_____。", choices: ["宇宙", "牧羊犬", "清纯"] },
+    { word: "嘲笑", pinyin: "cháo xiào", malay: "Mengejek", explanation: "取笑别人、笑别人", distractPinyin: ["zhāo xiào", "cháo xiào", "cáo xiào"], similarChars: ["嘲", "潮"], distractorWord: "潮笑", sentence: "我们应该互相帮助，不应该_____遇到困难的同学。", choices: ["嘲笑", "亲吻", "悬浮"] },
+    { word: "烦躁", pinyin: "fán zào", malay: "Gelisah / Rimas", explanation: "心里不舒服、坐立不安、有点生气", distractPinyin: ["fán cào", "fán zào", "fán zho"], similarChars: ["躁", "操"], distractorWord: "烦操", sentence: "天气太热了，让人心里感到有些_____不安。", choices: ["烦躁", "沉稳", "浪涛"] },
+    { word: "惊扰", pinyin: "jīng rǎo", malay: "Mengganggu", explanation: "打扰、吵到原本安静的环境", distractPinyin: ["jīn rǎo", "jīng lǎo", "jīng rào"], similarChars: ["扰", "龙"], distractorWord: "惊龙", sentence: "请大家走路轻一点，不要_____正在睡觉的小宝宝。", choices: ["惊扰", "晃动", "幽幽"] },
+    { word: "牧羊犬", pinyin: "mù yáng quǎn", malay: "Anjing gembala", explanation: "帮主人看管和照顾羊群的狗", distractPinyin: ["mù yáng kuǎn", "mù yáng quán", "mù yáng quǎn"], similarChars: ["犬", "大"], distractorWord: "牧羊大", sentence: "忠诚的_____在草地上奔跑，保护着羊群。", choices: ["牧羊犬", "围栏", "绿荫"] },
+    { word: "围栏", pinyin: "wéi lán", malay: "Pagar", explanation: "用木头或铁做的栅栏/篱笆", distractPinyin: ["wéi nán", "wéi lán", "wèi lán"], similarChars: ["栏", "阻"], distractorWord: "围阻", sentence: "农夫在农场周围建起了高高的_____。", choices: ["围栏", "攀附", "亲吻"] },
+    { word: "晃动", pinyin: "huǎng dòng", malay: "Bergoyang", explanation: "摇摇晃晃、动来动去", distractPinyin: ["huáng dòng", "huǎng dòng", "huǎng tóng"], similarChars: ["晃", "光"], distractorWord: "光动", sentence: "风吹过来，树叶在阳光下轻轻拉扯和_____。", choices: ["晃动", "烦躁", "宇宙"] },
+    { word: "绿荫", pinyin: "lǜ yīn", malay: "Teduhan pokok", explanation: "树木茂盛时，树下凉快阴暗的地方", distractPinyin: ["lù yīn", "lǜ yīn", "lǜ yīng"], similarChars: ["荫", "阴"], distractorWord: "绿阴", sentence: "夏天，大家喜欢坐在大树下的_____里乘凉。", choices: ["绿荫", "惊扰", "嘲笑"] },
+    { word: "亲吻", pinyin: "qīn wěn", malay: "Mencium", explanation: "用嘴唇轻轻碰（亲一下）", distractPinyin: ["qīn wěn", "qīng wěn", "qīn wěng"], similarChars: ["吻", "物"], distractorWord: "亲物", sentence: "妈妈轻轻_____了小男孩的额头，祝他晚安。", choices: ["亲吻", "悬浮", "浪涛"] },
+    { word: "清纯", pinyin: "qīng chún", malay: "Suci / Bersih", explanation: "像干净的水一样，非常纯洁、美好", distractPinyin: ["qīn chún", "qīng cún", "qīng chún"], similarChars: ["纯", "吨"], distractorWord: "清吨", sentence: "盛开的花朵散发出一股淡雅而_____的芬芳。", choices: ["清纯", "烦躁", "围栏"] },
+    { word: "沉稳", pinyin: "chén wěn", malay: "Tenang / Stabil", explanation: "很安静、很稳重，不慌张", distractPinyin: ["chéng wěn", "chén wěn", "chén wěng"], similarChars: ["稳", "隐"], distractorWord: "沉隐", sentence: "班长做事非常_____，遇到困难时从不慌张。", choices: ["沉稳", "晃动", "牧羊犬"] }
+];
+
+// STATE MANAGEMENT
+let showMalay = true;
+let totalScore = 0;
+let answeredSets = { pinyin: 0, char: 0, match: 0, fill: 0 };
+
+// QUEUES TO ENSURE ALL 15 WORDS ARE TESTED AND WRONG ANSWERS ARE REPEATED
+let pinyinQueue = [];
+let pinyinMastered = 0;
+
+let charQueue = [];
+let charMastered = 0;
+
+let matchAllWords = [];
+let matchBatchIndex = 0;
+let matchMastered = 0;
+
+let fillQueue = [];
+let fillMastered = 0;
+
+let selectedMatchLeft = null;
+let matchedCount = 0;
+
+// SOUND EFFECTS (Web Audio API)
+function playSound(type) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'correct') {
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+            osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+            osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.4);
+        } else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, ctx.currentTime);
+            osc.frequency.setValueAtTime(174.61, ctx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        }
+    } catch(e) {}
+}
+
+// SPEECH SYNTHESIS (TTS)
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'zh-CN';
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+    }
+}
+
+// SHUFFLE HELPER
+function shuffleArray(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
+}
+
+// INITIALIZE QUEUES FOR ALL 15 WORDS
+function initAllQueues() {
+    pinyinQueue = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    pinyinMastered = 0;
+
+    charQueue = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    charMastered = 0;
+
+    matchAllWords = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    matchBatchIndex = 0;
+    matchMastered = 0;
+
+    fillQueue = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    fillMastered = 0;
+}
+
+// INIT APP
+window.onload = function() {
+    initAllQueues();
+    renderFlashcards();
+    loadPinyinQuestion();
+    loadCharQuestion();
+    initMatchingGame();
+    loadFillQuestion();
+};
+
+// TOGGLE MALAY
+function toggleMalayHelp() {
+    showMalay = !showMalay;
+    const btnText = document.getElementById('malayBtnText');
+    btnText.innerText = showMalay ? "隐藏国文辅助 (BM)" : "显示国文辅助 (BM)";
+    
+    document.querySelectorAll('.malay-tag').forEach(el => {
+        if (showMalay) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+    });
+}
+
+// TAB SWITCHING
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.remove('border-sky-500', 'bg-sky-500', 'text-white');
+        el.classList.add('bg-white', 'text-slate-600');
+    });
+
+    document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+    const activeBtn = document.getElementById(`tab-${tabId}`);
+    activeBtn.classList.add('bg-sky-500', 'text-white');
+}
+
+// --- 1. RENDER FLASHCARDS ---
+function renderFlashcards() {
+    const container = document.getElementById('flashcardsContainer');
+    container.innerHTML = vocabularyData.map(item => `
+        <div class="p-4 bg-slate-50 hover:bg-sky-50/50 rounded-2xl border border-slate-200 transition bounce-hover flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <span class="text-2xl font-bold text-slate-800 mr-2">${item.word}</span>
+                        <span class="text-sm font-semibold text-sky-600 bg-sky-100 px-2 py-0.5 rounded-lg">${item.pinyin}</span>
+                    </div>
+                    <button onclick="speakText('${item.word}')" class="w-8 h-8 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center text-xs shadow transition">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-slate-600 mb-2">${item.explanation}</p>
+            </div>
+            <div class="malay-tag ${showMalay ? '' : 'hidden'} text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200/60 px-2.5 py-1 rounded-lg self-start">
+                🇲🇾 BM: ${item.malay}
+            </div>
+        </div>
+    `).join('');
+}
+
+// --- 2. PINYIN QUIZ (Queue based for all 15 words) ---
+function loadPinyinQuestion() {
+    const container = document.getElementById('pinyinQuizArea');
+    document.getElementById('pinyinProgress').innerText = pinyinMastered;
+
+    if (pinyinQueue.length === 0) {
+        container.innerHTML = `
+            <div class="bg-emerald-50 border-2 border-emerald-300 p-8 rounded-3xl text-center my-4">
+                <div class="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-md">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-emerald-800 mb-2">全关通关成功！</h3>
+                <p class="text-sm text-emerald-700 mb-4">你已彻底掌握全部 15 个词汇的汉语拼音！</p>
+                <button onclick="resetPinyinSection()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>重新挑战本关
+                </button>
+            </div>
+        `;
+        checkAllComplete('pinyin');
+        return;
+    }
+
+    const qIdx = pinyinQueue[0];
+    const q = vocabularyData[qIdx];
+    const choices = [q.pinyin, ...q.distractPinyin].sort(() => Math.random() - 0.5);
+
+    container.innerHTML = `
+        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 text-center mb-6 relative">
+            <span class="absolute top-3 right-4 text-xs font-semibold text-slate-400">待巩固: ${pinyinQueue.length} 词</span>
+            <div class="text-xs font-bold text-sky-500 uppercase tracking-wider mb-1">请选出正确读音</div>
+            <div class="text-4xl font-extrabold text-slate-800 mb-2">${q.word}</div>
+            <div class="malay-tag ${showMalay ? '' : 'hidden'} inline-block text-xs text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">${q.malay}</div>
+        </div>
+        <div id="pinyinFeedback" class="hidden mb-3 p-2.5 bg-amber-100 border border-amber-300 text-amber-800 rounded-xl text-center text-xs font-bold">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i> 答错了！该词已放入重答队列，稍后将再次出现，继续加油！
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            ${choices.map(c => `
+                <button onclick="checkPinyinAnswer(this, '${c}', '${q.pinyin}')" class="pinyin-opt-btn p-4 bg-white hover:bg-sky-50 border-2 border-slate-200 hover:border-sky-300 rounded-2xl text-lg font-bold text-slate-700 shadow-sm transition">
+                    ${c}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function checkPinyinAnswer(btn, selected, correct) {
+    const btns = document.querySelectorAll('.pinyin-opt-btn');
+    btns.forEach(b => b.disabled = true);
+
+    if (selected === correct) {
+        btn.className = "pinyin-opt-btn p-4 bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl text-lg font-bold shadow-md animate-bounce";
+        playSound('correct');
+        addScore(10);
+        pinyinMastered++;
+        pinyinQueue.shift(); // Remove mastered word
+        document.getElementById('pinyinProgress').innerText = pinyinMastered;
+
+        setTimeout(() => {
+            loadPinyinQuestion();
+        }, 1000);
+    } else {
+        btn.className = "pinyin-opt-btn p-4 bg-rose-500 text-white border-2 border-rose-600 rounded-2xl text-lg font-bold shadow-md opacity-80";
+        playSound('wrong');
+        const feedback = document.getElementById('pinyinFeedback');
+        if (feedback) feedback.classList.remove('hidden');
+
+        // Move to back of queue so it repeats until mastered
+        const wrongIdx = pinyinQueue.shift();
+        pinyinQueue.push(wrongIdx);
+
+        setTimeout(() => {
+            loadPinyinQuestion();
+        }, 1500);
+    }
+}
+
+function resetPinyinSection() {
+    pinyinQueue = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    pinyinMastered = 0;
+    loadPinyinQuestion();
+}
+
+// --- 3. CHARACTER QUIZ (Queue based for all 15 words) ---
+function loadCharQuestion() {
+    const container = document.getElementById('charQuizArea');
+    document.getElementById('charProgress').innerText = charMastered;
+
+    if (charQueue.length === 0) {
+        container.innerHTML = `
+            <div class="bg-indigo-50 border-2 border-indigo-300 p-8 rounded-3xl text-center my-4">
+                <div class="w-16 h-16 bg-indigo-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-md">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-indigo-800 mb-2">全关通关成功！</h3>
+                <p class="text-sm text-indigo-700 mb-4">你已成功掌握全部 15 个字词的形近字辨析！</p>
+                <button onclick="resetCharSection()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>重新挑战本关
+                </button>
+            </div>
+        `;
+        checkAllComplete('char');
+        return;
+    }
+
+    const qIdx = charQueue[0];
+    const q = vocabularyData[qIdx];
+    const correctChar = q.similarChars[0];
+    const wrongChar = q.similarChars[1];
+    const choices = [correctChar, wrongChar].sort(() => Math.random() - 0.5);
+
+    const blankWord = q.word.replace(correctChar, "（ &nbsp; ）");
+
+    container.innerHTML = `
+        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 text-center mb-6 relative">
+            <span class="absolute top-3 right-4 text-xs font-semibold text-slate-400">待巩固: ${charQueue.length} 词</span>
+            <div class="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-1">选字配对词语</div>
+            <div class="text-3xl font-extrabold text-slate-800 mb-2">${blankWord}</div>
+            <div class="text-sm font-semibold text-slate-500 mb-2">拼音: ${q.pinyin}</div>
+            <div class="malay-tag ${showMalay ? '' : 'hidden'} inline-block text-xs text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">${q.malay}</div>
+        </div>
+        <div id="charFeedback" class="hidden mb-3 p-2.5 bg-amber-100 border border-amber-300 text-amber-800 rounded-xl text-center text-xs font-bold">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i> 答错了！该词已放入重答队列，稍后将再次出现，继续加油！
+        </div>
+        <div class="flex justify-center gap-4 mb-4">
+            ${choices.map(c => `
+                <button onclick="checkCharAnswer(this, '${c}', '${correctChar}')" class="char-opt-btn w-24 h-24 bg-white hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 rounded-2xl text-3xl font-extrabold text-slate-700 shadow-sm transition flex items-center justify-center">
+                    ${c}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function checkCharAnswer(btn, selected, correct) {
+    const btns = document.querySelectorAll('.char-opt-btn');
+    btns.forEach(b => b.disabled = true);
+
+    if (selected === correct) {
+        btn.className = "char-opt-btn w-24 h-24 bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl text-3xl font-extrabold shadow-md animate-bounce flex items-center justify-center";
+        playSound('correct');
+        addScore(10);
+        charMastered++;
+        charQueue.shift();
+        document.getElementById('charProgress').innerText = charMastered;
+
+        setTimeout(() => {
+            loadCharQuestion();
+        }, 1000);
+    } else {
+        btn.className = "char-opt-btn w-24 h-24 bg-rose-500 text-white border-2 border-rose-600 rounded-2xl text-3xl font-extrabold shadow-md opacity-80 flex items-center justify-center";
+        playSound('wrong');
+        const feedback = document.getElementById('charFeedback');
+        if (feedback) feedback.classList.remove('hidden');
+
+        const wrongIdx = charQueue.shift();
+        charQueue.push(wrongIdx);
+
+        setTimeout(() => {
+            loadCharQuestion();
+        }, 1500);
+    }
+}
+
+function resetCharSection() {
+    charQueue = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    charMastered = 0;
+    loadCharQuestion();
+}
+
+// --- 4. MATCHING GAME (3 Batches of 5 = 15 total words) ---
+let matchPairs = [];
+
+function initMatchingGame() {
+    matchAllWords = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    matchBatchIndex = 0;
+    matchMastered = 0;
+    document.getElementById('matchProgress').innerText = matchMastered;
+    loadMatchingBatch();
+}
+
+function loadMatchingBatch() {
+    const batchIndices = matchAllWords.slice(matchBatchIndex, matchBatchIndex + 5);
+    matchPairs = batchIndices.map(i => vocabularyData[i]);
+    selectedMatchLeft = null;
+    matchedCount = 0;
+
+    const batchNum = Math.floor(matchBatchIndex / 5) + 1;
+    const badgeEl = document.getElementById('matchBatchBadge');
+    if (badgeEl) badgeEl.innerText = `第 ${batchNum} / 3 组 (本组5词)`;
+
+    const leftCol = document.getElementById('matchLeftCol');
+    const rightCol = document.getElementById('matchRightCol');
+
+    const shuffledLeft = [...matchPairs].sort(() => Math.random() - 0.5);
+    const shuffledRight = [...matchPairs].sort(() => Math.random() - 0.5);
+
+    leftCol.innerHTML = shuffledLeft.map(item => `
+        <button id="match-left-${item.word}" onclick="selectLeftMatch('${item.word}')" class="w-full p-4 bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl font-bold text-lg text-slate-700 text-left transition flex justify-between items-center">
+            <span>${item.word}</span>
+            <span class="text-xs text-slate-400 font-normal">${item.pinyin}</span>
+        </button>
+    `).join('');
+
+    rightCol.innerHTML = shuffledRight.map(item => `
+        <button id="match-right-${item.word}" onclick="selectRightMatch('${item.word}')" class="w-full p-3 bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl text-sm font-medium text-slate-700 text-left transition">
+            <div>${item.explanation}</div>
+            <div class="malay-tag ${showMalay ? '' : 'hidden'} text-xs text-amber-700 mt-1 font-semibold">🇲🇾 ${item.malay}</div>
+        </button>
+    `).join('');
+}
+
+function selectLeftMatch(word) {
+    if (document.getElementById(`match-left-${word}`).disabled) return;
+    
+    matchPairs.forEach(p => {
+        const btn = document.getElementById(`match-left-${p.word}`);
+        if (btn && !btn.disabled) btn.className = "w-full p-4 bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl font-bold text-lg text-slate-700 text-left transition flex justify-between items-center";
+    });
+
+    selectedMatchLeft = word;
+    const currentBtn = document.getElementById(`match-left-${word}`);
+    currentBtn.className = "w-full p-4 bg-amber-100 border-2 border-amber-500 rounded-2xl font-bold text-lg text-amber-900 text-left transition flex justify-between items-center shadow-md";
+}
+
+function selectRightMatch(word) {
+    if (!selectedMatchLeft) return;
+    if (document.getElementById(`match-right-${word}`).disabled) return;
+
+    if (selectedMatchLeft === word) {
+        playSound('correct');
+        addScore(10);
+        
+        const leftBtn = document.getElementById(`match-left-${selectedMatchLeft}`);
+        const rightBtn = document.getElementById(`match-right-${word}`);
+
+        leftBtn.className = "w-full p-4 bg-emerald-100 border-2 border-emerald-500 text-emerald-800 rounded-2xl font-bold text-lg text-left opacity-70";
+        rightBtn.className = "w-full p-3 bg-emerald-100 border-2 border-emerald-500 text-emerald-800 rounded-2xl text-sm text-left opacity-70";
+        
+        leftBtn.disabled = true;
+        rightBtn.disabled = true;
+        
+        selectedMatchLeft = null;
+        matchedCount++;
+        matchMastered++;
+        document.getElementById('matchProgress').innerText = matchMastered;
+
+        if (matchedCount === 5) {
+            setTimeout(() => {
+                if (matchMastered >= 15) {
+                    checkAllComplete('match');
+                    const leftCol = document.getElementById('matchLeftCol');
+                    const rightCol = document.getElementById('matchRightCol');
+                    leftCol.innerHTML = `
+                        <div class="col-span-2 bg-amber-50 border-2 border-amber-300 p-6 rounded-3xl text-center my-2">
+                            <div class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-2 shadow">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-amber-900 mb-1">配对通关成功！</h3>
+                            <p class="text-xs text-amber-800">你已成功将全部 15 个词语与正确字义配对完毕！</p>
+                        </div>
+                    `;
+                    rightCol.innerHTML = '';
+                } else {
+                    matchBatchIndex += 5;
+                    loadMatchingBatch();
+                }
+            }, 600);
+        }
+    } else {
+        playSound('wrong');
+        const rightBtn = document.getElementById(`match-right-${word}`);
+        rightBtn.classList.add('border-rose-500', 'bg-rose-50');
+        setTimeout(() => {
+            rightBtn.classList.remove('border-rose-500', 'bg-rose-50');
+        }, 800);
+    }
+}
+
+function resetMatching() {
+    initMatchingGame();
+}
+
+// --- 5. FILL IN THE BLANK (TTS) (Queue based for all 15 words) ---
+function loadFillQuestion() {
+    const container = document.getElementById('fillQuizArea');
+    document.getElementById('fillProgress').innerText = fillMastered;
+
+    if (fillQueue.length === 0) {
+        container.innerHTML = `
+            <div class="bg-rose-50 border-2 border-rose-300 p-8 rounded-3xl text-center my-4">
+                <div class="w-16 h-16 bg-rose-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-md">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-rose-800 mb-2">全关通关成功！</h3>
+                <p class="text-sm text-rose-700 mb-4">你已成功完成全部 15 个词汇的句子填空与语音理解！</p>
+                <button onclick="resetFillSection()" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow transition">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>重新挑战本关
+                </button>
+            </div>
+        `;
+        checkAllComplete('fill');
+        return;
+    }
+
+    const qIdx = fillQueue[0];
+    const q = vocabularyData[qIdx];
+    const shuffledChoices = [...q.choices].sort(() => Math.random() - 0.5);
+
+    container.innerHTML = `
+        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 mb-6 relative">
+            <span class="absolute top-3 right-4 text-xs font-semibold text-slate-400">待巩固: ${fillQueue.length} 词</span>
+            <div class="flex justify-between items-center mb-3 pr-16">
+                <span class="text-xs font-bold text-rose-500 uppercase">句子填空</span>
+                <button onclick="speakText('${q.sentence.replace('_____', '空')}')" class="px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition shadow">
+                    <i class="fa-solid fa-volume-high"></i> 听句子
+                </button>
+            </div>
+            <div class="text-xl font-bold text-slate-800 leading-relaxed mb-3" id="fillSentence">
+                ${q.sentence.replace('_____', '<span class="text-rose-500 border-b-2 border-rose-400 px-2">_____</span>')}
+            </div>
+            <div class="malay-tag ${showMalay ? '' : 'hidden'} text-xs text-amber-700 bg-amber-50 p-2 rounded-xl border border-amber-200 font-medium">
+                💡 提示 (BM): ${q.malay} (${q.explanation})
+            </div>
+        </div>
+        <div id="fillFeedback" class="hidden mb-3 p-2.5 bg-amber-100 border border-amber-300 text-amber-800 rounded-xl text-center text-xs font-bold">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i> 答错了！该词已放入重答队列，稍后将再次出现，继续加油！
+        </div>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+            ${shuffledChoices.map(c => `
+                <button onclick="checkFillAnswer(this, '${c}', '${q.word}', '${q.sentence}')" class="fill-opt-btn p-4 bg-white hover:bg-rose-50 border-2 border-slate-200 hover:border-rose-300 rounded-2xl text-lg font-bold text-slate-700 shadow-sm transition">
+                    ${c}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function checkFillAnswer(btn, selected, correct, fullSentence) {
+    const btns = document.querySelectorAll('.fill-opt-btn');
+    btns.forEach(b => b.disabled = true);
+
+    if (selected === correct) {
+        btn.className = "fill-opt-btn p-4 bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl text-lg font-bold shadow-md animate-bounce";
+        playSound('correct');
+        addScore(10);
+        fillMastered++;
+        fillQueue.shift();
+        document.getElementById('fillProgress').innerText = fillMastered;
+        
+        const completedSentence = fullSentence.replace('_____', correct);
+        speakText(completedSentence);
+
+        setTimeout(() => {
+            loadFillQuestion();
+        }, 1500);
+    } else {
+        btn.className = "fill-opt-btn p-4 bg-rose-500 text-white border-2 border-rose-600 rounded-2xl text-lg font-bold shadow-md opacity-80";
+        playSound('wrong');
+        const feedback = document.getElementById('fillFeedback');
+        if (feedback) feedback.classList.remove('hidden');
+
+        const wrongIdx = fillQueue.shift();
+        fillQueue.push(wrongIdx);
+
+        setTimeout(() => {
+            loadFillQuestion();
+        }, 1500);
+    }
+}
+
+function resetFillSection() {
+    fillQueue = shuffleArray(Array.from({length: 15}, (_, i) => i));
+    fillMastered = 0;
+    loadFillQuestion();
+}
+
+// SCORE & MODALS
+function addScore(pts) {
+    totalScore += pts;
+    document.getElementById('globalScore').innerText = totalScore;
+}
+
+function checkAllComplete(section) {
+    if (section) {
+        answeredSets[section] = 1;
+    }
+    const completedCount = Object.values(answeredSets).reduce((a, b) => a + (b ? 1 : 0), 0);
+    
+    try {
+        confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
+    } catch(e) {}
+
+    if (completedCount >= 4) {
+        showCompleteModal();
+    }
+}
+
+function showCompleteModal() {
+    document.getElementById('modalFinalScore').innerText = totalScore;
+    document.getElementById('completeModal').classList.remove('hidden');
+    try {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+    } catch(e) {}
+}
+
+function closeModal() {
+    document.getElementById('completeModal').classList.add('hidden');
+}
+</script>
+</body>
+</html>
