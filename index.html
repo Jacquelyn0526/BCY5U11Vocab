@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
@@ -461,6 +462,71 @@
         });
     };
 
+    let activeWriters = [];
+
+    // Dynamic stroke order renderer (Fixes missing GIF issue for 羊, 犬 and all characters)
+    function renderStrokes(chars) {
+        activeWriters = [];
+        const strokeContainer = document.getElementById('cardStrokesContainer');
+        if (!strokeContainer) return;
+        strokeContainer.innerHTML = '';
+
+        chars.forEach((char, idx) => {
+            const charWrapper = document.createElement('div');
+            charWrapper.className = 'flex flex-col items-center cursor-pointer group select-none';
+            charWrapper.title = '点击重新播放笔顺演示';
+            charWrapper.onclick = () => replayCharStroke(idx);
+
+            const tianzigeBox = document.createElement('div');
+            tianzigeBox.className = 'tianzige-box w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center p-1 shadow-inner bg-white relative overflow-hidden transition-transform group-hover:scale-105';
+            
+            const targetDiv = document.createElement('div');
+            targetDiv.id = `stroke-target-${idx}`;
+            targetDiv.className = 'w-full h-full flex items-center justify-center';
+            
+            tianzigeBox.appendChild(targetDiv);
+            
+            const label = document.createElement('span');
+            label.className = 'text-[11px] font-bold text-slate-600 mt-1 bg-white px-2 py-0.5 rounded-md border border-slate-200 flex items-center gap-1 group-hover:text-amber-600 group-hover:border-amber-300 transition';
+            label.innerHTML = `${char} <i class="fa-solid fa-rotate-right text-[9px] text-amber-500"></i>`;
+            
+            charWrapper.appendChild(tianzigeBox);
+            charWrapper.appendChild(label);
+            strokeContainer.appendChild(charWrapper);
+
+            // Initialize HanziWriter stroke animation
+            if (typeof HanziWriter !== 'undefined') {
+                try {
+                    const isMobile = window.innerWidth < 640;
+                    const size = isMobile ? 68 : 82;
+                    const writer = HanziWriter.create(`stroke-target-${idx}`, char, {
+                        width: size,
+                        height: size,
+                        padding: 4,
+                        showOutline: true,
+                        strokeColor: '#dc2626',
+                        outlineColor: '#cbd5e1',
+                        drawingWidth: 3.5,
+                        strokeAnimationSpeed: 1.2,
+                        delayBetweenStrokes: 120
+                    });
+                    writer.loopCharacterAnimation();
+                    activeWriters.push(writer);
+                } catch(e) {
+                    targetDiv.innerHTML = `<span class="text-2xl font-black text-slate-700">${char}</span>`;
+                }
+            } else {
+                targetDiv.innerHTML = `<span class="text-2xl font-black text-slate-700">${char}</span>`;
+            }
+        });
+    }
+
+    function replayCharStroke(index) {
+        if (activeWriters[index]) {
+            activeWriters[index].animateCharacter();
+        }
+    }
+
     // --- 1. RENDER STUDY CARD (Single Page with Explanation, Sentences & Strokes) ---
     function renderStudyCard() {
         const item = vocabularyData[currentStudyIndex];
@@ -473,20 +539,8 @@
         document.getElementById('cardMalay').innerText = item.malay;
         document.getElementById('studyPageIndicator').innerText = `第 ${currentStudyIndex + 1} / ${vocabularyData.length} 个词汇`;
 
-        // Stroke GIFs Container
-        const strokeContainer = document.getElementById('cardStrokesContainer');
-        const chars = item.word.split('');
-        strokeContainer.innerHTML = chars.map((char, idx) => {
-            const gifFile = item.strokes[idx] || '';
-            return `
-                <div class="flex flex-col items-center">
-                    <div class="tianzige-box w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center p-1 shadow-inner bg-white">
-                        <img src="${gifFile}" alt="${char} 笔顺" class="max-w-full max-h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=&quot;text-2xl font-black text-slate-700&quot;>${char}</span>';"/>
-                    </div>
-                    <span class="text-[11px] font-bold text-slate-600 mt-1 bg-white px-2 py-0.5 rounded-md border border-slate-200">${char}</span>
-                </div>
-            `;
-        }).join('');
+        // Render dynamic stroke animations for each character in the word
+        renderStrokes(item.word.split(''));
 
         updateQuickNavPills();
     }
